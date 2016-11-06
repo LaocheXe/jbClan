@@ -27,6 +27,8 @@ if(file_exists(e_PLUGIN."jbroster_menu/languages/".e_LANGUAGE.".php")) {
 require_once("includes/config.constants.php");
 require_once("includes/config.functions.php");
 
+$debug = FALSE;
+
 $sql->db_Select(DB_TABLE_ROSTER_PREFERENCES);
 while($row = $sql->db_Fetch()) {
     $organization_name              = $row['organization_name'];
@@ -72,13 +74,16 @@ if ($organization_logo == "") {
     </center>";
 }
 
-$numRows = $sql->db_Count(DB_TABLE_ROSTER_MEMBERS);
+$numRows = $sql->db_Count(DB_TABLE_ROSTER_MEMBERS);  
+
+if($debug){ echo "<br />roster members= ".$numRows; }
+ 
 if ($numRows == 0) {
     $text_1 .= "
     <center>
         <p>
-            <div style='width:80%; margin-top: 2em; margin-bottom: 2em'>
-                <table style='width:100%' class='fborder' cellspacing='0' cellpadding='0'>
+            <div class='table-responsive'>
+                <table class='table table-bordered'>
                     <tr>
                         <td class='forumheader3'>
                             <center>
@@ -107,14 +112,21 @@ if ($numRows == 0) {
 if (($sql->db_Count(DB_TABLE_ROSTER_MEMBERS, "(*)", "WHERE leader_status like 'Organization Leader%' OR leader_status like 'Organization Captain%' OR leader_status like 'Web Admin%'$customArgs") == 0) ||
 	($sql->db_Count(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "(*)", "WHERE main_display= 2") == 0)) {
 	// Don't display leader block
-} else {
+	if($debug){ 
+	  $count1 = ($sql->db_Count(DB_TABLE_ROSTER_MEMBERS, "(*)", "WHERE leader_status like 'Organization Leader%' OR leader_status like 'Organization Captain%' OR leader_status like 'Web Admin%'$customArgs") == 0);
+	  $count2 = ($sql->db_Count(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "(*)", "WHERE main_display= 2") == 0);
+		echo "<br />Organization leaders ".$count1;
+	  echo "<br />Main display = 2  ".$count2;
+	  echo "<br />- don't display leader block";
+		  }
+} else {    
 	$text_1 .= "
 	<center>
         <p>
-            <div style='width:80%; margin-top: 2em; margin-bottom: 2em'>
-                <table style='width:100%' class='fborder' cellspacing='0' cellpadding='0'>
+            <div class='table-responsive'>
+                <table class='table table-bordered'>
             		<tr>
-                        <td colspan='20' class='forumheader'>
+                        <th colspan='20' class='forumheader'>
                             <span class='smalltext'>";
 
 	                            if(file_exists(e_LANGUAGE == "English")) {
@@ -127,14 +139,14 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBERS, "(*)", "WHERE leader_status like 'O
 
 	                        $text_1 .= "
                             </span>
-                        </td>
+                        </th>
                     </tr>
                     <tr>
-                        <td class='forumheader3'>
+                        <th class='forumheader3'>
                             <span class='smalltext'>
                                 <b>".LAN_JBROSTER_GENERAL_LEADER_STATUS."</b>
                             </span>
-                        </td>";
+                        </th>";
 
                         $sql1 = new db;
                         $sql1->db_Select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "*", "main_display = 2 ORDER BY attribute_order");
@@ -144,18 +156,18 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBERS, "(*)", "WHERE leader_status like 'O
                             } else {
                 				if ($row1['attribute_id'] == 34) {
                 					$text_1 .= "
-                					<td class='forumheader3'>
+                					<th class='forumheader3'>
                 		                <span class='smalltext'>
                 		                    <b>".$row1['attribute_name']." $organization_name</b>
                 		                </span>
-                		            </td>";
+                		            </th>";
                 				} else {
                 					$text_1 .= "
-                					<td class='forumheader3'>
+                					<th class='forumheader3'>
                 		                <span class='smalltext'>
                 		                    <b>".$row1['attribute_name']."</b>
                 		                </span>
-                		            </td>";
+                		            </th>";
                 				}
                             }
                 		}
@@ -440,7 +452,7 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBERS, "(*)", "WHERE leader_status like 'O
 if (($sql->db_Count(DB_TABLE_ROSTER_TEAMS, "(*)", "WHERE display = 2") == 0) ||
 	($sql->db_Count(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "(*)", "WHERE main_display = 2") == 0)) {
 	// Don't display teams block
-} else {
+} else {    
     $sql1 = new db;
 	$sql1->db_Select(DB_TABLE_ROSTER_TEAMS, "*", "display = 2 ORDER BY team_order");
 	while($row1 = $sql1->db_Fetch()) {
@@ -448,8 +460,8 @@ if (($sql->db_Count(DB_TABLE_ROSTER_TEAMS, "(*)", "WHERE display = 2") == 0) ||
 	    $text_2 .= "
 	    <center>
 	        <p>
-    	        <div style='width:80%; margin-top: 2em; margin-bottom: 2em'>
-    	            <table style='width:100%' class='fborder' cellspacing='0' cellpadding='0'>
+    	        <div class='table-responsive'>
+    	            <table class='table table-bordered'>
     	                <tr>
     	                    <td colspan=20>
     	                        <table width='100%' cellspacing='0' cellpadding='0'>
@@ -791,8 +803,8 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBER_STATUS, "(*)", "WHERE display = 2") =
         $text_3 .= "
         <center>
             <p>
-                <div style='width:80%; margin-top: 2em; margin-bottom: 2em'>
-                    <table style='width:100%' class='fborder' cellspacing='0' cellpadding='0'>
+                <div class='table-responsive'>
+                    <table class='table table-bordered'>
                         <tr>
                             <td colspan=20>
                                 <table width='100%' cellspacing='0' cellpadding='0'>
@@ -1092,6 +1104,6 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBER_STATUS, "(*)", "WHERE display = 2") =
 	$title = "";
 	$ns->tablerender($title, $text_3);
 }
-
+		 
 require_once(FOOTERF);
 ?>

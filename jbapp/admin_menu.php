@@ -17,16 +17,17 @@
 |
 +--------------------------------------------------------------------------------+
 */
+if (!defined('e107_INIT'))
+{
+	exit;
+}
 
 if(file_exists(e_PLUGIN."jbapp/languages/".e_LANGUAGE.".php")) {
     include_lan(e_PLUGIN."jbapp/languages/".e_LANGUAGE.".php");
 }
-
-$sql->db_Select("plugin", "*");
-while($rows = $sql->db_Fetch()){
-    if (($rows['plugin_name'] == "jbRoster") && ($rows['plugin_installflag'] == "1")) {
-        $installed_jbroster = 1;
-    }
+             
+if (e107::isInstalled('jbroster_menu'))  {
+  $installed_jbroster = 1;
 }
 
 $menutitle  = LAN_JBAPP_ADMIN_MENU_TITLE;
@@ -38,7 +39,6 @@ $butid[]    = "admin_menu_01";
 $butname[]  = LAN_JBAPP_ADMIN_MENU_LINK_2;
 $butlink[]  = "admin_display_options.php";
 $butid[]    = "admin_menu_02";
-
 
 if (!$installed_jbroster) {
     $butname[]  = LAN_JBAPP_ADMIN_MENU_LINK_3;

@@ -1,3 +1,5 @@
+6.11.2016 - just getting it works under 2.1.2 version
+
 jbClan
 ======
 
