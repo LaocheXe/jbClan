@@ -56,11 +56,8 @@ if (!isset($sql1)) {
     $sql1 = new db;
 }
 
-$sql1->db_Select("plugin", "*");
-while($rows1 = $sql1->db_Fetch()){
-    if (($rows1['plugin_name'] == "jbRoster") && ($rows1['plugin_installflag'] == "1")) {
-        $installed_jbroster = 1;
-    }
+if (e107::isInstalled('jbroster_menu'))  {
+  $installed_jbroster = 1;
 }
 
 if (isset($installed_jbroster)) {

@@ -25,9 +25,10 @@ if(!getperms("P")){
     header("location:".e_HTTP."index.php");
     exit;
 }
-
-require_once(e_ADMIN."auth.php");
+$sql = e107::getDb();
 require_once("includes/config.functions.php");
+require_once("includes/config.constants.php");
+require_once(e_ADMIN."auth.php");
 
 if ($_POST['application_display'] == 1) {
 
@@ -37,18 +38,19 @@ if ($_POST['application_display'] == 1) {
     *
     **********************************************************************/
 
-    $sql->db_Update(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES,
+    $sql->update(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES,
         "application_display = 1");
 
     for ($x = 0; $x < count($_POST['attribute_application_display']); $x++) {
-        $sql->db_Update(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES,
+        $sql->update(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES,
             "application_display    = 2
             WHERE attribute_id      = ".intval($_POST['attribute_application_display'][$x]));
+             
     }
 }
 
-header("Location: admin_display_options.php");
-exit;
+  header("Location: admin_display_options.php");
+  exit;
 
 require_once(e_ADMIN."footer.php");
 ?>

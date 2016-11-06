@@ -28,11 +28,8 @@ if(!getperms("P")){
 
 require_once(e_ADMIN."auth.php");
 
-$sql->db_Select("plugin", "*");
-while($rows = $sql->db_Fetch()){
-    if (($rows['plugin_name'] == "jbRoster") && ($rows['plugin_installflag'] == "1")) {
-        $installed_jbroster = 1;
-    }
+if (e107::isInstalled('jbroster_menu'))  {
+  $installed_jbroster = 1;
 }
 
 if (!$installed_jbroster) {

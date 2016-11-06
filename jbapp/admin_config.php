@@ -33,16 +33,13 @@ if(file_exists(e_PLUGIN."jbapp/languages/".e_LANGUAGE.".php")){
 }
 
 require_once("includes/config.constants.php");
-
+																							
 $pageid = "admin_menu_01";
 
-$sql->db_Select("plugin", "*");
-while($rows = $sql->db_Fetch()){
-    if (($rows['plugin_name'] == "jbRoster") && ($rows['plugin_installflag'] == "1")) {
-        $installed_jbroster = 1;
-    }
+if (e107::isInstalled('jbroster_menu'))  {
+  $installed_jbroster = 1;
 }
-
+	
 if ($_POST['enter_data'] == 1) {
     $sql->db_Update(DB_TABLE_APP_INFO,
                       "organization_email       = '".$tp->toDB($_POST['organization_email'])."',
@@ -135,10 +132,11 @@ if ($_POST['enter_data'] == 1) {
             </table>
         </form>
     <div>";
-
+               
     $title = "<b>".LAN_JBAPP_ADMIN_CONFIG_TITLE."</b>";
-    $ns->tablerender($title, $text);
+    $ns->tablerender($title, $text);       
 }
 
-require_once(e_ADMIN."footer.php");
+require_once(e_ADMIN."footer.php");   
+exit;     
 ?>

@@ -29,12 +29,9 @@ require_once("includes/config.constants.php");
 if(USER) {
     if($_POST['submitApp'] == '1') {
 
-        $sql->db_Select("plugin");
-        while($row = $sql->db_Fetch()) {
-            if (($row['plugin_name'] == "jbRoster") && ($row['plugin_installflag'] == 1)) {
-                $installed_jbroster = 1;
-            }
-        }
+				if (e107::isInstalled('jbroster_menu'))  {
+				  $installed_jbroster = 1;
+				}		
 
         if ($installed_jbroster) {
 
@@ -367,8 +364,8 @@ if(USER) {
                     <td colspan='2' class='spacer' style='text-align:center;'>
 						<input type='hidden' name='member_id' value='".USERID."'>
 						<input type='hidden' name='submitApp' value='1'>
-                        <input type='submit' class='button' name='submit' value='".LAN_JBAPP_MAIN_PAGE_SUBMIT_APP."'>
-                        <input type='reset' class='button' name='reset' value='".LAN_JBAPP_MAIN_PAGE_RESET_APP."'>
+                        <input type='submit' class='button btn btn-primary' name='submit' value='".LAN_JBAPP_MAIN_PAGE_SUBMIT_APP."'>
+                        <input type='reset' class='button btn btn-primary' name='reset' value='".LAN_JBAPP_MAIN_PAGE_RESET_APP."'>
                     </td>
                 </tr>
             </table>

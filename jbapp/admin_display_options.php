@@ -34,11 +34,17 @@ if(file_exists(e_PLUGIN."jbapp/languages/".e_LANGUAGE.".php")){
 }
 
 $pageid = "admin_menu_02";
+$sql = e107::getDb();
 
-$sql->db_Select(DB_TABLE_ROSTER_PREFERENCES);
-while($row = $sql->db_Fetch()){
+$debug = FALSE;
+$sql->select(DB_TABLE_ROSTER_PREFERENCES);
+while($row = $sql->fetch()){      
     $organization_name = $row['organization_name'];
     $organization_type = $row['organization_type'];
+    if($debug){
+		  echo "<br />organization_name= ".$organization_name; 
+		  echo "<br />organization_type= ".$organization_type; 
+		}
 }
 
 $text .= "
@@ -64,11 +70,11 @@ $text .= "
                     </tr>";
 
                     if (($organization_type != 5) && ($organization_type != 6)) {
-                        $numRows = $sql->db_Count(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "(*)", " WHERE organization_type like 1 OR organization_type like 2 OR organization_type like ".intval($organization_type));
+                        $numRows = $sql->count(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "(*)", " WHERE organization_type like 1 OR organization_type like 2 OR organization_type like ".intval($organization_type));
                     } else {
-                        $numRows = $sql->db_Count(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "(*)", " WHERE organization_type like 1 OR organization_type like ".intval($organization_type));
+                        $numRows = $sql->count(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "(*)", " WHERE organization_type like 1 OR organization_type like ".intval($organization_type));
                     }
-
+                    if($debug){ echo "<br />roster custom attributes= ".$numRows; }
                     if ($numRows == 0) {
                         $text .= "
                         <tr>
@@ -85,12 +91,12 @@ $text .= "
                     }
 
                     if (($organization_type != 5) && ($organization_type != 6)) {
-                        $sql->db_Select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "*", "organization_type like 1 OR organization_type like 2 OR organization_type like ".intval($organization_type)." ORDER BY attribute_order");
+                        $sql->select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "*", "organization_type like 1 OR organization_type like 2 OR organization_type like ".intval($organization_type)." ORDER BY attribute_order");
                     } else {
-                        $sql->db_Select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "*", "organization_type like 1 OR organization_type like ".intval($organization_type)." ORDER BY attribute_order");
+                        $sql->select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "*", "organization_type like 1 OR organization_type like ".intval($organization_type)." ORDER BY attribute_order");
                     }
-
-                    while ($row = $sql->db_Fetch()) {
+										 
+                    while ($row = $sql->fetch()) {
                         if ($row['attribute_id'] == 3) {
                             // Don't display attribue
                         } else if ($row['attribute_id'] == 4) {
