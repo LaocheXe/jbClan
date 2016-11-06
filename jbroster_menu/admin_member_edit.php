@@ -30,13 +30,14 @@ require_once(e_ADMIN."auth.php");
 if(file_exists(e_PLUGIN."jbroster_menu/languages/".e_LANGUAGE.".php")) {
     include_lan(e_PLUGIN."jbroster_menu/languages/".e_LANGUAGE.".php");
 }
+$sql = e107::getDb();
 
 require_once("includes/config.constants.php");
 require_once("includes/config.functions.php");
 
 $pageid = "admin_menu_02";
 
-$sql->db_Select(DB_TABLE_ROSTER_PREFERENCES);
+$sql->select(DB_TABLE_ROSTER_PREFERENCES);
 while($row = $sql->db_Fetch()) {
     $organization_name = $row['organization_name'];
     $organization_type = $row['organization_type'];
@@ -104,12 +105,12 @@ if ($_GET['delete_member'] == '1') {
 
             // Update members status
 
-            $sql1 = new db;
-            $sql1->db_Update(DB_TABLE_ROSTER_MEMBERS,
+            $sql1 = e107::getDb('sql1');
+            $sql1->update(DB_TABLE_ROSTER_MEMBERS,
                 "member_status  = '".$tp->toDB($newMemberStatusArray[$x][1])."'
                 WHERE member_id = ".intval($newMemberStatusArray[$x][0]));
 
-            $sql1->db_Update(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
+            $sql1->update(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
                 "attribute_value        = '".$tp->toDB($newMemberStatusArray[$x][1])."'
 				WHERE   member_id       = ".intval($newMemberStatusArray[$x][0])."
 				AND     attribute_id    = 4");
@@ -125,7 +126,7 @@ if ($_GET['delete_member'] == '1') {
 
 	for ($x = 0; $x < count($newLeaderStatusArray); $x++) {
 
-        $num_rows = $sql->db_Count(DB_TABLE_ROSTER_MEMBERS, "(*)", "WHERE   member_id       = ".intval($newLeaderStatusArray[$x][0])."
+        $num_rows = $sql->count(DB_TABLE_ROSTER_MEMBERS, "(*)", "WHERE   member_id       = ".intval($newLeaderStatusArray[$x][0])."
                                                                     AND     leader_status   = '".$tp->toDB($newLeaderStatusArray[$x][1])."'");
 
         if ($num_rows > 0) {
@@ -134,12 +135,12 @@ if ($_GET['delete_member'] == '1') {
 
             // Update members status
 
-            $sql1 = new db;
-            $sql1->db_Update(DB_TABLE_ROSTER_MEMBERS,
+            $sql1 = e107::getDb('sql1');
+            $sql1->update(DB_TABLE_ROSTER_MEMBERS,
                 "leader_status  = '".$tp->toDB($newLeaderStatusArray[$x][1])."'
                 WHERE member_id = ".intval($newLeaderStatusArray[$x][0]));
 
-            $sql1->db_Update(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
+            $sql1->update(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
                 "attribute_value    = '".$tp->toDB($newLeaderStatusArray[$x][1])."'
 				WHERE member_id     = ".intval($newLeaderStatusArray[$x][0])."
 				AND  attribute_id   = 5");
@@ -173,51 +174,51 @@ if ($_GET['delete_member'] == '1') {
 
 	    		if ($key == 1) {
 
-			        $sql->db_Update(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
+			        $sql->update(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
                         "attribute_value    = '".$tp->toDB($val)."'
                         WHERE member_id     = ".intval($_POST['member_id'])."
                         AND attribute_id    = ".intval($key));
 
-			        $sql->db_Update(DB_TABLE_ROSTER_MEMBERS,
+			        $sql->update(DB_TABLE_ROSTER_MEMBERS,
                         "nickname       = '".$tp->toDB($val)."'
                         WHERE member_id = ".intval($_POST['member_id']));
 
 	    		} else if ($key == 2) {
 
-			        $sql->db_Update(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
+			        $sql->update(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
                         "attribute_value    = '".$tp->toDB($val)."'
                         WHERE member_id     = ".intval($_POST['member_id'])."
                         AND attribute_id    = ".intval($key));
 
-			        $sql->db_Update(DB_TABLE_ROSTER_MEMBERS,
+			        $sql->update(DB_TABLE_ROSTER_MEMBERS,
                         "real_name      = '".$tp->toDB($val)."'
                         WHERE member_id = ".intval($_POST['member_id']));
 
 	    		} else if ($key == 4) {
 
-			        $sql->db_Update(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
+			        $sql->update(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
                         "attribute_value    = '".$tp->toDB($val)."'
                         WHERE member_id     = ".intval($_POST['member_id'])."
                         AND attribute_id    = ".intval($key));
 
-			        $sql->db_Update(DB_TABLE_ROSTER_MEMBERS,
+			        $sql->update(DB_TABLE_ROSTER_MEMBERS,
                         "member_status  = '".$tp->toDB($val)."'
                         WHERE member_id = ".intval($_POST['member_id']));
 
 	    		} else if ($key == 5) {
 
-			        $sql->db_Update(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
+			        $sql->update(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
                         "attribute_value    = '".$tp->toDB($val)."'
                         WHERE member_id     = ".intval($_POST['member_id'])."
                         AND attribute_id    = ".intval($key));
 
-			        $sql->db_Update(DB_TABLE_ROSTER_MEMBERS,
+			        $sql->update(DB_TABLE_ROSTER_MEMBERS,
                         "leader_status  = '".$tp->toDB($val)."'
                         WHERE member_id = ".intval($_POST['member_id']));
 
 	    		} else {
 
-			        $sql->db_Update(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
+			        $sql->update(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
                         "attribute_value    = '".$tp->toDB($val)."'
                         WHERE member_id     = ".intval($_POST['member_id'])."
                         AND attribute_id    = ".intval($key));
@@ -279,14 +280,14 @@ if ($_GET['delete_member'] == '1') {
 	}
 
 	if ($validAgeDate != null) {
-		$sql->db_Update(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
+		$sql->update(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
             "attribute_value    = '".$tp->toDB($validAgeDate)."'
             WHERE member_id     = ".intval($_POST['member_id'])."
             AND attribute_id    = 15");
 	}
 
 	if ($validDobDate != null) {
-		$sql->db_Update(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
+		$sql->update(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
             "attribute_value    = '".$tp->toDB($validDobDate)."'
             WHERE member_id     = ".intval($_POST['member_id'])."
             AND attribute_id    = 49");
@@ -307,17 +308,17 @@ if ($_GET['delete_member'] == '1') {
 					<td style='width:33%' class='forumheader3'><b>".LAN_JBROSTER_GENERAL_NEW_VALUE."</b></td>
 				</tr>";
 
-			    $sql->db_Select(DB_TABLE_ROSTER_MEMBERS, "*", "member_id = ".intval($_GET['member_id']));
-			    while($row = $sql->db_Fetch()) {
+			    $sql->select(DB_TABLE_ROSTER_MEMBERS, "*", "member_id = ".intval($_GET['member_id']));
+			    while($row = $sql->fetch()) {
 
-			        $sql1 = new db;
-			        $sql1->db_Select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "*", "profile_display = 2");
-			    	while($row1 = $sql1->db_Fetch()) {
+			        $sql1 = e107::getDb('sql1');
+			        $sql1->select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "*", "profile_display = 2");
+			    	while($row1 = $sql1->fetch()) {
 
-				        $sql2 = new db;
-				        $sql2->db_Select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES, "*", "member_id           = ".intval($_GET['member_id'])."
+				        $sql2 = e107::getDb('sql2');
+				        $sql2->select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES, "*", "member_id           = ".intval($_GET['member_id'])."
 				                                                                        AND attribute_id    = ".intval($row1['attribute_id']));
-				    	while($row2 = $sql2->db_Fetch()) {
+				    	while($row2 = $sql2->fetch()) {
 				    		$attribute_value = $row2['attribute_value'];
 				    	}
 
@@ -366,9 +367,9 @@ if ($_GET['delete_member'] == '1') {
 						        <td style='width:33%' class='forumheader3'>
 						            <select class='tbox' name='".$row1['attribute_id']."'>";
 
-						            $sql3 = new db;
-						            $sql3->db_Select(DB_TABLE_ROSTER_MEMBER_STATUS, "*", "ORDER BY status_order", "no-where");
-						            while ($row3 = $sql3->db_Fetch()) {
+						            $sql3 = e107::getDb('sql3');
+						            $sql3->select(DB_TABLE_ROSTER_MEMBER_STATUS, "*", "ORDER BY status_order", "no-where");
+						            while ($row3 = $sql3->fetch()) {
 
 						                if ($attribute_value == $row3['status_name']) {
 						                    $text .= "
@@ -387,9 +388,9 @@ if ($_GET['delete_member'] == '1') {
 						        <td style='width:33%' class='forumheader3'>
 						            <select class='tbox' name='".$row1['attribute_id']."'>";
 
-						            $sql3 = new db;
-						            $sql3->db_Select(DB_TABLE_ROSTER_LEADER_STATUS, "*", "ORDER BY status_order", "no-where");
-						            while ($row3 = $sql3->db_Fetch()) {
+						            $sql3 = e107::getDb('sql3');
+						            $sql3->select(DB_TABLE_ROSTER_LEADER_STATUS, "*", "ORDER BY status_order", "no-where");
+						            while ($row3 = $sql3->fetch()) {
 
 						                if ($attribute_value == $row3['status_name']) {
 						                    $text .= "
