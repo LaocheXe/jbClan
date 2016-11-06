@@ -83,7 +83,7 @@ if ($numRows == 0) {
     <center>
         <p>
             <div class='table-responsive'>
-                <table class='table table-bordered'>
+                <table class='table table-bordered' id='table_01'>
                     <tr>
                         <td class='forumheader3'>
                             <center>
@@ -124,7 +124,7 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBERS, "(*)", "WHERE leader_status like 'O
 	<center>
         <p>
             <div class='table-responsive'>
-                <table class='table table-bordered'>
+                <table class='table table-bordered' id='table_02'>
             		<tr>
                         <th colspan='20' class='forumheader'>
                             <span class='smalltext'>";
@@ -224,7 +224,7 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBERS, "(*)", "WHERE leader_status like 'O
             							$text_1 .= "
             							<td class='forumheader3'>
             				                <span class='smalltext'>
-            				                    &nbsp;
+            				                    &nbsp;   
             				                </span>
             				            </td>";
             						} else {
@@ -461,7 +461,7 @@ if (($sql->db_Count(DB_TABLE_ROSTER_TEAMS, "(*)", "WHERE display = 2") == 0) ||
 	    <center>
 	        <p>
     	        <div class='table-responsive'>
-    	            <table class='table table-bordered'>
+    	            <table class='table table-bordered' id='table_03'>
     	                <tr>
     	                    <td colspan=20>
     	                        <table width='100%' cellspacing='0' cellpadding='0'>
@@ -804,7 +804,7 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBER_STATUS, "(*)", "WHERE display = 2") =
         <center>
             <p>
                 <div class='table-responsive'>
-                    <table class='table table-bordered'>
+                    <table class='table table-bordered' id='table_04'>
                         <tr>
                             <td colspan=20>
                                 <table width='100%' cellspacing='0' cellpadding='0'>
