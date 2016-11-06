@@ -28,9 +28,9 @@ require_once("includes/config.constants.php");
 require_once("includes/config.functions.php");
 
 $debug = FALSE;
-
-$sql->db_Select(DB_TABLE_ROSTER_PREFERENCES);
-while($row = $sql->db_Fetch()) {
+$sql = e107::getDb();
+$sql->select(DB_TABLE_ROSTER_PREFERENCES);
+while($row = $sql->fetch()) {
     $organization_name              = $row['organization_name'];
     $organization_type              = $row['organization_type'];
     $organization_designation       = $row['organization_designation'];
@@ -39,21 +39,21 @@ while($row = $sql->db_Fetch()) {
     $organization_logo_alignment    = $row['organization_logo_alignment'];
 }
 
-$sql->db_Select(DB_TABLE_ROSTER_ORG_DESIGNATIONS, "*", "designation_id = ".intval($organization_designation));
-while($row = $sql->db_Fetch()) {
+$sql->select(DB_TABLE_ROSTER_ORG_DESIGNATIONS, "*", "designation_id = ".intval($organization_designation));
+while($row = $sql->fetch()) {
     $organization_designation_name = $row['designation_name'];
 }
 
-$sql->db_Select(DB_TABLE_ROSTER_ORG_UNIT_DESIGNATIONS, "*", "designation_id = ".intval($organization_unit_designation));
-while($row = $sql->db_Fetch()) {
+$sql->select(DB_TABLE_ROSTER_ORG_UNIT_DESIGNATIONS, "*", "designation_id = ".intval($organization_unit_designation));
+while($row = $sql->fetch()) {
     $organization_unit_designation_name = $row['designation_name'];
 }
 
-$sql->db_Select(DB_TABLE_ROSTER_LEADER_STATUS, "*", "status_name != 'None'
+$sql->select(DB_TABLE_ROSTER_LEADER_STATUS, "*", "status_name != 'None'
                                                  AND status_name != 'Organization Leader'
                                                  AND status_name != 'Organization Captain'
                                                  AND status_name != 'Web Admin'");
-while($row = $sql->db_Fetch()) {
+while($row = $sql->fetch()) {
 	$customArgs .= " OR leader_status like '".$tp->toDB($row['status_name'])."%'";
 }
 
@@ -74,7 +74,7 @@ if ($organization_logo == "") {
     </center>";
 }
 
-$numRows = $sql->db_Count(DB_TABLE_ROSTER_MEMBERS);  
+$numRows = $sql->count(DB_TABLE_ROSTER_MEMBERS);  
 
 if($debug){ echo "<br />roster members= ".$numRows; }
  
@@ -109,12 +109,12 @@ if ($numRows == 0) {
  ************************************************************/
 
 
-if (($sql->db_Count(DB_TABLE_ROSTER_MEMBERS, "(*)", "WHERE leader_status like 'Organization Leader%' OR leader_status like 'Organization Captain%' OR leader_status like 'Web Admin%'$customArgs") == 0) ||
-	($sql->db_Count(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "(*)", "WHERE main_display= 2") == 0)) {
+if (($sql->count(DB_TABLE_ROSTER_MEMBERS, "(*)", "WHERE leader_status like 'Organization Leader%' OR leader_status like 'Organization Captain%' OR leader_status like 'Web Admin%'$customArgs") == 0) ||
+	($sql->count(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "(*)", "WHERE main_display= 2") == 0)) {
 	// Don't display leader block
 	if($debug){ 
-	  $count1 = ($sql->db_Count(DB_TABLE_ROSTER_MEMBERS, "(*)", "WHERE leader_status like 'Organization Leader%' OR leader_status like 'Organization Captain%' OR leader_status like 'Web Admin%'$customArgs") == 0);
-	  $count2 = ($sql->db_Count(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "(*)", "WHERE main_display= 2") == 0);
+	  $count1 = ($sql->count(DB_TABLE_ROSTER_MEMBERS, "(*)", "WHERE leader_status like 'Organization Leader%' OR leader_status like 'Organization Captain%' OR leader_status like 'Web Admin%'$customArgs") == 0);
+	  $count2 = ($sql->count(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "(*)", "WHERE main_display= 2") == 0);
 		echo "<br />Organization leaders ".$count1;
 	  echo "<br />Main display = 2  ".$count2;
 	  echo "<br />- don't display leader block";
@@ -148,9 +148,9 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBERS, "(*)", "WHERE leader_status like 'O
                             </span>
                         </th>";
 
-                        $sql1 = new db;
-                        $sql1->db_Select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "*", "main_display = 2 ORDER BY attribute_order");
-                		while ($row1 = $sql1->db_Fetch()) {
+                        $sql1 = e107::getDb('sql1'); 
+                        $sql1->select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "*", "main_display = 2 ORDER BY attribute_order");
+                		while ($row1 = $sql1->fetch()) {
                 			if ($row1['attribute_id'] == 3) {
                                 // Don't display 'Team Status'
                             } else {
@@ -175,25 +175,25 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBERS, "(*)", "WHERE leader_status like 'O
             		$text_1 .= "
             		</tr>";
 
-            		if($sql1->db_Count(DB_TABLE_ROSTER_MEMBERS, "(*)", "WHERE leader_status like 'Organization Leader%'
+            		if($sql1->count(DB_TABLE_ROSTER_MEMBERS, "(*)", "WHERE leader_status like 'Organization Leader%'
             		                                                    OR    leader_status like 'Organization Captain%'
             		                                                    OR    leader_status like 'Web Admin%'$customArgs") > 0) {
 
-            		    $sql2 = new db;
-            			$sql2->db_Select(DB_TABLE_ROSTER_MEMBERS, "*", "leader_status like 'Organization Leader%'
+            		  $sql2 = e107::getDb('sql2');   
+            			$sql2->select(DB_TABLE_ROSTER_MEMBERS, "*", "leader_status like 'Organization Leader%'
             			                                             OR leader_status like 'Organization Captain%'
             			                                             OR leader_status like 'Web Admin%'$customArgs
             			                                             ORDER BY leader_order");
-                        while($row2 = $sql2->db_Fetch()) {
+                        while($row2 = $sql2->fetch()) {
 
-                        	$sql3 = new db;
-                            $sql3->db_Select(DB_TABLE_ROSTER_MEMBERS, "*", "member_id = ".intval($row2['member_id']));
-                            while ($row3 = $sql3->db_Fetch()) {
+                        		$sql3 = e107::getDb('sql2');  
+                            $sql3->select(DB_TABLE_ROSTER_MEMBERS, "*", "member_id = ".intval($row2['member_id']));
+                            while ($row3 = $sql3->fetch()) {
                                 $leaderStatusLeader = $row3['leader_status'];
 
-                                $sql4 = new db;
-                                $sql4->db_Select(DB_TABLE_ROSTER_LEADER_STATUS, "*", "status_name = '".$tp->toDB($leaderStatusLeader)."'");
-                                while ($row4 = $sql4->db_Fetch()) {
+                                $sql4 = e107::getDb('sql4');  
+                                $sql4->select(DB_TABLE_ROSTER_LEADER_STATUS, "*", "status_name = '".$tp->toDB($leaderStatusLeader)."'");
+                                while ($row4 = $sql4->fetch()) {
                                     $textColorLeader = $row4['text_color'];
                                 }
                             }
@@ -206,14 +206,14 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBERS, "(*)", "WHERE leader_status like 'O
                                     </span>
                                 </td>";
 
-            			    $sql3->db_Select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "*", "main_display = 2 ORDER BY attribute_order");
-            				while ($row3 = $sql3->db_Fetch()) {
+            			    $sql3->select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "*", "main_display = 2 ORDER BY attribute_order");
+            				while ($row3 = $sql3->fetch()) {
 
 
-            					$sql4 = new db;
-            				    $sql4->db_Select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES, "*", "member_id           = ".intval($row2['member_id'])."
+            					$sql4 = e107::getDb('sql4');  
+            				  $sql4->select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES, "*", "member_id           = ".intval($row2['member_id'])."
             				                                                                    AND attribute_id    = ".intval($row3['attribute_id']));
-            					while ($row4 = $sql4->db_Fetch()) {
+            					while ($row4 = $sql4->fetch()) {
             						$member_id = $row4['member_id'];
             						$attributeValue = $row4['attribute_value'];
             					}
@@ -258,9 +258,9 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBERS, "(*)", "WHERE leader_status like 'O
                                     // Don't display 'Team Status'
                                 } else if ($row3['attribute_id'] == 4) {
 
-            						$sql4 = new db;
-            	                	$sql4->db_Select(DB_TABLE_ROSTER_MEMBER_STATUS, "*", "status_name = '".$tp->toDB($attributeValue)."'");
-            	                	while ($row4 = $sql4->db_Fetch()) {
+            										$sql4 = e107::getDb('sql4');  
+            	                	$sql4->select(DB_TABLE_ROSTER_MEMBER_STATUS, "*", "status_name = '".$tp->toDB($attributeValue)."'");
+            	                	while ($row4 = $sql4->fetch()) {
             	                		$textColor = $row4['text_color'];
             	                	}
 
@@ -282,9 +282,9 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBERS, "(*)", "WHERE leader_status like 'O
 
             					} else if ($row3['attribute_id'] == 5) {
 
-            						$sql4 = new db;
-            	                	$sql4->db_Select(DB_TABLE_ROSTER_LEADER_STATUS, "*", "status_name = '".$tp->toDB($attributeValue)."'");
-            	                	while ($row4 = $sql4->db_Fetch()) {
+            										$sql4 = e107::getDb('sql4');  
+            	                	$sql4->select(DB_TABLE_ROSTER_LEADER_STATUS, "*", "status_name = '".$tp->toDB($attributeValue)."'");
+            	                	while ($row4 = $sql4->fetch()) {
             	                		$textColor = $row4['text_color'];
             	                	}
 
@@ -449,13 +449,13 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBERS, "(*)", "WHERE leader_status like 'O
  *
  ************************************************************/
 
-if (($sql->db_Count(DB_TABLE_ROSTER_TEAMS, "(*)", "WHERE display = 2") == 0) ||
-	($sql->db_Count(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "(*)", "WHERE main_display = 2") == 0)) {
+if (($sql->count(DB_TABLE_ROSTER_TEAMS, "(*)", "WHERE display = 2") == 0) ||
+	($sql->count(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "(*)", "WHERE main_display = 2") == 0)) {
 	// Don't display teams block
 } else {    
-    $sql1 = new db;
-	$sql1->db_Select(DB_TABLE_ROSTER_TEAMS, "*", "display = 2 ORDER BY team_order");
-	while($row1 = $sql1->db_Fetch()) {
+  $sql1 = e107::getDb('sql1');   
+	$sql1->select(DB_TABLE_ROSTER_TEAMS, "*", "display = 2 ORDER BY team_order");
+	while($row1 = $sql1->fetch()) {
 
 	    $text_2 .= "
 	    <center>
@@ -481,9 +481,9 @@ if (($sql->db_Count(DB_TABLE_ROSTER_TEAMS, "(*)", "WHERE display = 2") == 0) ||
     	                                    $text_2 .= "
     	                                    <td colspan=2 style='border-left: 0px;' width='50%' class='forumheader3'>&nbsp;</td>";
     	                                } else {
-    	                                    $sql2 = new db;
-    	                                    $sql2->db_Select(DB_TABLE_ROSTER_GAMES, "*", "game_name = '".$tp->toDB($row1['game_name'])."'");
-    	                                    while ($row2 = $sql2->db_Fetch()) {
+    	                                    $sql2 = e107::getDb('sql2');  
+    	                                    $sql2->select(DB_TABLE_ROSTER_GAMES, "*", "game_name = '".$tp->toDB($row1['game_name'])."'");
+    	                                    while ($row2 = $sql2->fetch()) {
     	                                        $text_2 .= "
     	                                        <td colspan=2 style='border-left: 0px;' width='50%' class='forumheader' align=right>
     	                                            <span class='smalltext'>
@@ -503,9 +503,9 @@ if (($sql->db_Count(DB_TABLE_ROSTER_TEAMS, "(*)", "WHERE display = 2") == 0) ||
 
     	                $text_2 .= "<tr>";
 
-    			        $sql2 = new db;
-    			        $sql2->db_Select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "*", "main_display = 2 ORDER BY attribute_order");
-    					while ($row2 = $sql2->db_Fetch()) {
+    			        $sql2 = e107::getDb('sql2');  
+    			        $sql2->select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "*", "main_display = 2 ORDER BY attribute_order");
+    					while ($row2 = $sql2->fetch()) {
 
     						if ($row2['attribute_id'] == 34) {
     							$text_2 .= "
@@ -525,22 +525,22 @@ if (($sql->db_Count(DB_TABLE_ROSTER_TEAMS, "(*)", "WHERE display = 2") == 0) ||
     					}
     					$text_2 .= "</tr>";
 
-    	                if($sql2->db_Count(DB_TABLE_ROSTER_TEAM_MEMBERS, "(*)", "WHERE team_id = ".intval($row1['team_id'])) > 0) {
+    	                if($sql2->count(DB_TABLE_ROSTER_TEAM_MEMBERS, "(*)", "WHERE team_id = ".intval($row1['team_id'])) > 0) {
 
-    						$sql3 = new db;
-    	                    $sql3->db_Select(DB_TABLE_ROSTER_TEAM_MEMBERS, "*", "team_id = ".intval($row1['team_id'])." ORDER BY member_team_order");
-    	                    while($row3 = $sql3->db_Fetch()) {
+    											$sql3 = e107::getDb('sql3');  
+    	                    $sql3->select(DB_TABLE_ROSTER_TEAM_MEMBERS, "*", "team_id = ".intval($row1['team_id'])." ORDER BY member_team_order");
+    	                    while($row3 = $sql3->fetch()) {
 
     	                        $text_2 .="<tr>";
 
-    							$sql4 = new db;
-    						    $sql4->db_Select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "*", "main_display=2 ORDER BY attribute_order");
-    							while ($row4 = $sql4->db_Fetch()) {
+    							  $sql4 = e107::getDb('sql4');  
+    						    $sql4->select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "*", "main_display=2 ORDER BY attribute_order");
+    							while ($row4 = $sql4->fetch()) {
 
-    								$sql5 = new db;
-    							    $sql5->db_Select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES, "*", "member_id        = ".intval($row3['member_id'])."
+    								$sql5 = e107::getDb('sql5');  
+    							  $sql5->select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES, "*", "member_id        = ".intval($row3['member_id'])."
     							                                                                    AND attribute_id = ".intval($row4['attribute_id']));
-    								while ($row5 = $sql5->db_Fetch()) {
+    								while ($row5 = $sql5->fetch()) {
     									$member_id = $row5['member_id'];
     									$attributeValue = $row5['attribute_value'];
     								}
@@ -583,9 +583,9 @@ if (($sql->db_Count(DB_TABLE_ROSTER_TEAMS, "(*)", "WHERE display = 2") == 0) ||
 
     								} else if ($row4['attribute_id'] == 4) {
 
-    									$sql5 = new db;
-    				                	$sql5->db_Select(DB_TABLE_ROSTER_MEMBER_STATUS, "*", "status_name = '".$tp->toDB($attributeValue)."'");
-    				                	while ($row5 = $sql5->db_Fetch()) {
+    													$sql5 = e107::getDb('sql5'); 
+    				                	$sql5->select(DB_TABLE_ROSTER_MEMBER_STATUS, "*", "status_name = '".$tp->toDB($attributeValue)."'");
+    				                	while ($row5 = $sql5->fetch()) {
     				                		$textColor = $row5['text_color'];
     				                	}
 
@@ -607,9 +607,9 @@ if (($sql->db_Count(DB_TABLE_ROSTER_TEAMS, "(*)", "WHERE display = 2") == 0) ||
 
     								} else if ($row4['attribute_id'] == 5) {
 
-    									$sql5 = new db;
-    				                	$sql5->db_Select(DB_TABLE_ROSTER_LEADER_STATUS, "*", "status_name = '".$tp->toDB($attributeValue)."'");
-    				                	while ($row5 = $sql5->db_Fetch()) {
+    													$sql5 = e107::getDb('sql5');  
+    				                	$sql5->select(DB_TABLE_ROSTER_LEADER_STATUS, "*", "status_name = '".$tp->toDB($attributeValue)."'");
+    				                	while ($row5 = $sql5->fetch()) {
     				                		$textColor = $row5['text_color'];
     				                	}
 
@@ -718,10 +718,10 @@ if (($sql->db_Count(DB_TABLE_ROSTER_TEAMS, "(*)", "WHERE display = 2") == 0) ||
 
     								} else if ($row4['attribute_id'] == 3) {
 
-                                        $sql5 = new db;
-                                        $sql5->db_Select(DB_TABLE_ROSTER_TEAM_STATUS, "*", "status_name     = '".$tp->toDB($row3['member_team_status'])."'
+                                        $sql5 = e107::getDb('sql5');  
+                                        $sql5->select(DB_TABLE_ROSTER_TEAM_STATUS, "*", "status_name     = '".$tp->toDB($row3['member_team_status'])."'
                                                                                             AND game_name   = '".$tp->toDB($row3['game_name'])."'");
-                                        while ($row5 = $sql5->db_Fetch()) {
+                                        while ($row5 = $sql5->fetch()) {
                                             $text_color = $row5['text_color'];
                                         }
 
@@ -792,20 +792,20 @@ if (($sql->db_Count(DB_TABLE_ROSTER_TEAMS, "(*)", "WHERE display = 2") == 0) ||
  *
  ************************************************************/
 
-if (($sql->db_Count(DB_TABLE_ROSTER_MEMBER_STATUS, "(*)", "WHERE display = 2") == 0) ||
-	($sql->db_Count(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "(*)", "WHERE main_display = 2") == 0)) {
+if (($sql->count(DB_TABLE_ROSTER_MEMBER_STATUS, "(*)", "WHERE display = 2") == 0) ||
+	($sql->count(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "(*)", "WHERE main_display = 2") == 0)) {
 	// Don't display teams block
 } else {
-    $sql1 = new db;
-	$sql1->db_Select(DB_TABLE_ROSTER_MEMBER_STATUS, "*", "display = 2 ORDER BY status_order");
-	while($row1 = $sql1->db_Fetch()) {
+  $sql1 = e107::getDb('sql1');  
+	$sql1->select(DB_TABLE_ROSTER_MEMBER_STATUS, "*", "display = 2 ORDER BY status_order");
+	while($row1 = $sql1->fetch()) {
 
         $text_3 .= "
         <center>
             <p>
                 <div class='table-responsive'>
                     <table class='table table-bordered' id='table_04'>
-                        <tr>
+                        <tr id='row_01'>
                             <td colspan=20>
                                 <table width='100%' cellspacing='0' cellpadding='0'>
                                     <tr>
@@ -827,10 +827,10 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBER_STATUS, "(*)", "WHERE display = 2") =
                                         </td>
                                     </tr>
                                     <tr>";
-
-							        $sql2 = new db;
-							        $sql2->db_Select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "*", "main_display = 2 ORDER BY attribute_order");
-									while ($row2 = $sql2->db_Fetch()) {
+                       
+							        $sql2 = e107::getDb('sql2');
+							        $sql2->select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "*", "main_display = 2 ORDER BY attribute_order");
+									while ($row2 = $sql2->fetch()) {
 
                                         if ($row2['attribute_id'] == 3) {
                                             // Don't display 'Team Status'
@@ -856,23 +856,23 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBER_STATUS, "(*)", "WHERE display = 2") =
 
 									$text_3 .= "</tr>";
 
-		                    		if(($sql2->db_Count(DB_TABLE_ROSTER_MEMBERS, "(*)", "WHERE  member_status = '".$tp->toDB($row1['status_name'])."'")) > 0) {
+		                    		if(($sql2->count(DB_TABLE_ROSTER_MEMBERS, "(*)", "WHERE  member_status = '".$tp->toDB($row1['status_name'])."'")) > 0) {
 
-			                            $sql3 = new db;
-			                            $sql3->db_Select(DB_TABLE_ROSTER_MEMBERS, "*", "member_status = '".$tp->toDB($row1['status_name'])."' ORDER BY nickname");
-			                            while($row3 = $sql3->db_Fetch()) {
+			                            $sql3 = e107::getDb('sql3');
+			                            $sql3->select(DB_TABLE_ROSTER_MEMBERS, "*", "member_status = '".$tp->toDB($row1['status_name'])."' ORDER BY nickname");
+			                            while($row3 = $sql3->fetch()) {
 
-			                            	$text_3 .="<tr>";
+			                            	$text_3 .="<tr id='row_02'>";
 
-											$sql4 = new db;
-										    $sql4->db_Select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "*", "main_display = 2 ORDER BY attribute_order");
-											while ($row4 = $sql4->db_Fetch()) {
+											$sql4 = e107::getDb('sql4');
+										  $sql4->select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES, "*", "main_display = 2 ORDER BY attribute_order");
+											while ($row4 = $sql4->fetch()) {
 
 
-												$sql5 = new db;
-											    $sql5->db_Select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES, "*", "member_id        = ".intval($row3['member_id'])."
-											                                                                    AND attribute_id = ".intval($row4['attribute_id']));
-												while ($row5 = $sql5->db_Fetch()) {
+												$sql5 = e107::getDb('sql5');
+											    $sql5->select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES, "*", "member_id        = ".intval($row3['member_id'])."
+											                                                                AND attribute_id = ".intval($row4['attribute_id']));
+												while ($row5 = $sql5->fetch()) {
 													$member_id = $row5['member_id'];
 													$attributeValue = $row5['attribute_value'];
 												}
@@ -881,14 +881,14 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBER_STATUS, "(*)", "WHERE display = 2") =
 
 													if ($attributeValue == '') {
 														$text_3 .= "
-														<td class='forumheader3'>
+														<td id='cell_01' class='forumheader3'>
 											                <span class='smalltext'>
-											                    &nbsp;
+											                    ".intval($row3['member_id'])." - ".intval($row4['attribute_id'])."
 											                </span>
 											            </td>";
 													} else {
 														$text_3 .= "
-														<td class='forumheader3'>
+														<td id='cell_02' class='forumheader3'>
 											                <span class='smalltext'>
 											                    <a href='member_profile.php?member_id=$member_id'>$attributeValue</a>
 											                </span>
@@ -899,14 +899,14 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBER_STATUS, "(*)", "WHERE display = 2") =
 
 													if ($attributeValue == '') {
 														$text_3 .= "
-														<td class='forumheader3'>
+														<td id='cell_03' class='forumheader3'>
 											                <span class='smalltext'>
 											                    &nbsp;
 											                </span>
 											            </td>";
 													} else {
 														$text_3 .= "
-														<td class='forumheader3'>
+														<td id='cell_04' class='forumheader3'>
 											                <span class='smalltext'>
 											                    <a href='member_profile.php?member_id=$member_id'>$attributeValue</a>
 											                </span>
@@ -917,22 +917,22 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBER_STATUS, "(*)", "WHERE display = 2") =
                                                     // Don't display 'Team Status'
                                                 } else if ($row4['attribute_id'] == 4) {
 
-													$sql5 = new db;
-								                	$sql5->db_Select(DB_TABLE_ROSTER_MEMBER_STATUS, "*", "status_name = '".$tp->toDB($attributeValue)."'");
-								                	while ($row5 = $sql5->db_Fetch()) {
+													$sql5 = e107::getDb('sql5');
+								                	$sql5->select(DB_TABLE_ROSTER_MEMBER_STATUS, "*", "status_name = '".$tp->toDB($attributeValue)."'");
+								                	while ($row5 = $sql5->fetch()) {
 								                		$textColor = $row5['text_color'];
 								                	}
 
 													if ($attributeValue == '') {
 														$text_3 .= "
-														<td class='forumheader3'>
+														<td id='cell_05' class='forumheader3'>
 											                <span class='smalltext'>
 											                    &nbsp;
 											                </span>
 											            </td>";
 													} else {
 														$text_3 .= "
-														<td class='forumheader3'>
+														<td id='cell_06' class='forumheader3'>
 											                <span style='color: $textColor' class='smalltext'>
 											                    <b>$attributeValue</b>
 											                </span>
@@ -941,22 +941,22 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBER_STATUS, "(*)", "WHERE display = 2") =
 
 												} else if ($row4['attribute_id'] == 5) {
 
-													$sql5 = new db;
-								                	$sql5->db_Select(DB_TABLE_ROSTER_LEADER_STATUS, "*", "status_name = '".$tp->toDB($attributeValue)."'");
-								                	while ($row5 = $sql5->db_Fetch()) {
+													$sql5 = e107::getDb('sql5');
+								                	$sql5->select(DB_TABLE_ROSTER_LEADER_STATUS, "*", "status_name = '".$tp->toDB($attributeValue)."'");
+								                	while ($row5 = $sql5->fetch()) {
 								                		$textColor = $row5['text_color'];
 								                	}
 
 													if ($attributeValue == '') {
 														$text_3 .= "
-														<td class='forumheader3'>
+														<td id='cell_07' class='forumheader3'>
 											                <span class='smalltext'>
 											                    &nbsp;
 											                </span>
 											            </td>";
 													} else {
 														$text_3 .= "
-														<td class='forumheader3'>
+														<td id='cell_08' class='forumheader3'>
 											                <span style='color: $textColor' class='smalltext'>
 											                    <b>$attributeValue</b>
 											                </span>
@@ -967,14 +967,14 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBER_STATUS, "(*)", "WHERE display = 2") =
 
 													if ($attributeValue == '') {
 														$text_3 .= "
-														<td class='forumheader3'>
+														<td id='cell_09' class='forumheader3'>
 											                <span class='smalltext'>
 											                    &nbsp;
 											                </span>
 											            </td>";
 													} else {
 														$text_3 .= "
-														<td class='forumheader3'>
+														<td id='cell_10' class='forumheader3'>
 											                <span class='smalltext'>
 											                    <a href='mailto:$attributeValue'>".LAN_JBROSTER_GENERAL_EMAIL."</a>
 											                </span>
@@ -985,14 +985,14 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBER_STATUS, "(*)", "WHERE display = 2") =
 
 													if ($attributeValue == '') {
 														$text_3 .= "
-														<td class='forumheader3'>
+														<td id='cell_11' class='forumheader3'>
 											                <span class='smalltext'>
 											                    &nbsp;
 											                </span>
 											            </td>";
 													} else {
 														$text_3 .= "
-														<td class='forumheader3'>
+														<td id='cell_12' class='forumheader3'>
 											                <span class='smalltext'>
 											                    <a href='http://profile.xfire.com/$attributeValue' target='_blank'>$attributeValue</a>
 											                </span>
@@ -1003,7 +1003,7 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBER_STATUS, "(*)", "WHERE display = 2") =
 
 													if ($attributeValue == '') {
 														$text_3 .= "
-														<td class='forumheader3'>
+														<td id='cell_13' class='forumheader3'>
 											                <span class='smalltext'>
 											                    &nbsp;
 											                </span>
@@ -1013,7 +1013,7 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBER_STATUS, "(*)", "WHERE display = 2") =
 														$calcAge = calc_age($attributeValue);
 
 														$text_3 .= "
-														<td class='forumheader3'>
+														<td id='cell_14' class='forumheader3'>
 											                <span class='smalltext'>
 																<center>
 																	<b>$calcAge</b>
@@ -1026,14 +1026,14 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBER_STATUS, "(*)", "WHERE display = 2") =
 
 													if ($attributeValue == '') {
 														$text_3 .= "
-														<td class='forumheader3'>
+														<td id='cell_15' class='forumheader3'>
 											                <span class='smalltext'>
 											                    &nbsp;
 											                </span>
 											            </td>";
 													} else {
 														$text_3 .= "
-														<td class='forumheader3'>
+														<td id='cell_16' class='forumheader3'>
 											                <span class='smalltext'>
 																<b>";
 																if($attributeValue == 0) {
@@ -1054,7 +1054,7 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBER_STATUS, "(*)", "WHERE display = 2") =
 													if ($attributeValue == '') {
 
 														$text_3 .= "
-														<td class='forumheader3'>
+														<td id='cell_17' class='forumheader3'>
 											                <span class='smalltext'>
 											                    &nbsp;
 											                </span>
@@ -1062,7 +1062,7 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBER_STATUS, "(*)", "WHERE display = 2") =
 													} else {
 
 														$text_3 .= "
-														<td class='forumheader3'>
+														<td id='cell_18' class='forumheader3'>
 											                <span class='smalltext'>
 											                    <b>$attributeValue</b>
 											                </span>
@@ -1075,7 +1075,7 @@ if (($sql->db_Count(DB_TABLE_ROSTER_MEMBER_STATUS, "(*)", "WHERE display = 2") =
 				                    } else {
 
 										$text_3 .= "
-										<tr>
+										<tr id='row_03'>
 							                <td colspan=20 class='forumheader3'>
 							                    <span class='smalltext'>
 													<center>

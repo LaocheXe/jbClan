@@ -47,8 +47,8 @@ $still_members_to_import = NULL;
 
 if ($_POST['import_members'] == '1') {
 
-    $sql->db_select("user", "*", "ORDER BY user_name", "no-where");
-    while ($row = $sql->db_Fetch()) {
+    $sql->select("user", "*", "ORDER BY user_name", "no-where");
+    while ($row = $sql->fetch()) {
         $sql1 = e107::getDb('sql1');
         if(!$sql1->count(DB_TABLE_ROSTER_MEMBERS, "(*)", "WHERE member_id = ".intval($row['user_id']))) {
             $still_members_to_import++;
@@ -523,7 +523,7 @@ if ($_POST['import_members'] == '1') {
                                 1");
     					} else if ($row2['attribute_id'] == 8) {
     						$sql3 = e107::getDb('sql3');
-    						$sql3->db_Insert(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
+    						$sql3->insert(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
         						intval($row['user_id']).",
         						".intval($row2['attribute_id']).",
         						'".$tp->toDB($row2['attribute_name'])."',
@@ -545,7 +545,7 @@ if ($_POST['import_members'] == '1') {
                                 1");
     					}  else {
     						$sql3 = e107::getDb('sql3'); 
-    						$sql3->db_Insert(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
+    						$sql3->insert(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
         						intval($row['user_id']).",
         						".intval($row2['attribute_id']).",
         						'".$tp->toDB($row2['attribute_name'])."',
@@ -615,7 +615,7 @@ if ($_POST['import_members'] == '1') {
                             <td class='forumheader3'>
                                 <center>";
 
-                                    if(!$sql->db_Select("user")){
+                                    if(!$sql->select("user")){
                                         $text .=
                                         "<form action='admin_import_users.php' method='POST'>
                                         <p>
@@ -647,9 +647,9 @@ if ($_POST['import_members'] == '1') {
                                                         <td class='forumheader3'>
                                                             <center>";
 
-                                                                while ($row = $sql-> db_Fetch()) {
-                                                                    $sql1 = new db;
-                                                                    if ($sql1->db_Count(DB_TABLE_ROSTER_MEMBERS, "(*)", " WHERE nickname = '".$tp->toDB($row['user_name'])."'") > 0) {
+                                                                while ($row = $sql-> fetch()) {
+                                                                    $sql1 = e107::getDb('sql1');  
+                                                                    if ($sql1->count(DB_TABLE_ROSTER_MEMBERS, "(*)", " WHERE nickname = '".$tp->toDB($row['user_name'])."'") > 0) {
                                                                         // Do Nothing
                                                                     } else {
                                                                         $text .= $row['user_name'] . "<br />";
@@ -705,35 +705,35 @@ if ($_POST['import_members'] == '1') {
 
     } else if ($_POST["confirm"] == "yes") {
 
-    	$sql->db_Select("user");
-    	while ($row = $sql-> db_Fetch()) {
+    	$sql->select("user");
+    	while ($row = $sql-> fetch()) {
 
-    		$sql1 = new db;
-    		if ($sql1->db_Count(DB_TABLE_ROSTER_MEMBERS, "(*)", " WHERE nickname = '".$tp->toDB($row['user_name'])."'") > 0) {
+    		$sql1 = e107::getDb('sql1'); 
+    		if ($sql1->count(DB_TABLE_ROSTER_MEMBERS, "(*)", " WHERE nickname = '".$tp->toDB($row['user_name'])."'") > 0) {
     			// Do Nothing
     		} else {
-                $sql2 = new db;
-                $sql2->db_Select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES);
-                while ($row2 = $sql2->db_Fetch()) {
-                    $sql3 = new db;
-    				if ($sql3->db_Count(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES, "(*)", " WHERE member_id       = ".intval($row['user_id'])."
+                $sql2 = e107::getDb('sql2');
+                $sql2->select(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_ENTRIES);
+                while ($row2 = $sql2->fetch()) {
+                    $sql3 = e107::getDb('sql3');
+    				if ($sql3->count(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES, "(*)", " WHERE member_id       = ".intval($row['user_id'])."
     				                                                                      AND   attribute_id    = ".intval($row2['attribute_id'])) > 0) {
     					// Do Nothing
     				} else {
     					if ($row2['attribute_id'] == 1) {
-    						$sql4 = new db;
-    						$sql4->db_Insert(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
+    						$sql4 = e107::getDb('sql4');  
+    						$sql4->insert(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
         						intval($row['user_id']).",
         						".intval($row2['attribute_id']).",
         						'".$tp->toDB($row2['attribute_name'])."',
         						'".$tp->toDB($row['user_name'])."',
-        						".intval($organizationType)."',
+        						".intval($organizationType).",
         						1,
         						1,
                                 1");
     					} else if ($row2['attribute_id'] == 8) {
-    						$sql4 = new db;
-    						$sql4->db_Insert(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
+    						$sql4 = e107::getDb('sql4'); 
+    						$sql4->insert(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
         						intval($row['user_id']).",
         						".intval($row2['attribute_id']).",
         						'".$tp->toDB($row2['attribute_name'])."',
@@ -743,8 +743,8 @@ if ($_POST['import_members'] == '1') {
         						1,
                                 1");
     					} else if ($row2['attribute_id'] == 47) {
-    						$sql4 = new db;
-    						$sql4->db_Insert(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
+    						$sql4 = e107::getDb('sql4'); 
+    						$sql4->insert(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
         						intval($row['user_id']).",
         						".intval($row2['attribute_id']).",
         						'".$tp->toDB($row2['attribute_name'])."',
@@ -754,8 +754,8 @@ if ($_POST['import_members'] == '1') {
         						1,
                                 1");
     					}  else {
-    						$sql4 = new db;
-    						$sql4->db_Insert(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
+    						$sql4 = e107::getDb('sql4');  
+    						$sql4->insert(DB_TABLE_ROSTER_CUSTOM_ATTRIBUTE_VALUES,
         						intval($row['user_id']).",
         						".intval($row2['attribute_id']).",
         						'".$tp->toDB($row2['attribute_name'])."',
@@ -768,7 +768,7 @@ if ($_POST['import_members'] == '1') {
     				}
                 }
 
-    			$sql2->db_Insert(DB_TABLE_ROSTER_MEMBERS,
+    			$sql2->insert(DB_TABLE_ROSTER_MEMBERS,
         			intval($row['user_id']).",
         			'".$tp->toDB($row['user_name'])."',
         			'',
